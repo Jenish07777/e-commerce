@@ -2,9 +2,15 @@ import { Link } from "react-router-dom";
 // import { Search, Heart, ShoppingBag, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { Heart, Menu, Search, ShoppingBag, X } from "lucide-react";
+import { useCart } from "../contexts/CartContext";
+import { useWishlist } from "../contexts/WishlistContext";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const { cartCount } =useCart()
+
+  const { wishlistCount } = useWishlist();
 
   return (
     <header className="sticky top-0 z-50 bg-[#F5F2EC] text-[#171512]">
@@ -67,12 +73,21 @@ const Navbar = () => {
           </button>
 
           <Link
-            to="/wishlist"
-            className="transition hover:text-[#8A6243]"
-            aria-label="Wishlist"
-          >
-            <Heart size={20} strokeWidth={1.8} />
-          </Link>
+  to="/wishlist"
+  className="relative transition hover:text-[#8A6243]"
+  aria-label="Wishlist"
+>
+  <Heart
+    size={20}
+    strokeWidth={1.8}
+  />
+
+  {wishlistCount > 0 && (
+    <span className="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#B8E63C] px-1 text-[10px] font-bold text-[#171512]">
+      {wishlistCount}
+    </span>
+  )}
+</Link>
 
           <Link
             to="/cart"
@@ -82,8 +97,8 @@ const Navbar = () => {
             <ShoppingBag size={20} strokeWidth={1.8} />
 
             {/* Cart count */}
-            <span className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-[#B8E63C] text-[10px] font-bold text-[#171512]">
-              0
+            <span className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-[#B8E63C] px-1 text-[10px] font-bold text-[#171512]">
+              {cartCount}
             </span>
           </Link>
 

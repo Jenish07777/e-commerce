@@ -12,6 +12,7 @@ import Profile from './pages/Profile'
 import Register from './pages/Register'
 import Cart from './pages/Cart'
 import Home from './pages/Home'
+import Wishlist from './pages/Wishlist'
 
 function App() {
   
@@ -29,6 +30,7 @@ function App() {
       <Route path="checkout" element={<Checkout/>}/>
       <Route path="profile" element={<Profile/>}/>
       <Route path="orders" element={<Orders/>}/>
+      <Route path="wishlist" element={<Wishlist/>}/>
 
     </Routes>
     <Footer/>
