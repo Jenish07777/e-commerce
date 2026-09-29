@@ -16,39 +16,39 @@ export const CartProvider = ({ children }) => {
 
   // Add product to cart
   const addToCart = (product, size, quantity = 1) => {
-    setCartItems((currentItems) => {
-      const existingItem = currentItems.find(
-        (item) =>
-          item.id === product.id &&
-          item.size === size
+  setCartItems((currentItems) => {
+    const existingItem = currentItems.find(
+      (item) =>
+        item.id === product._id &&
+        item.size === size
+    );
+
+    if (existingItem) {
+      return currentItems.map((item) =>
+        item.id === product._id &&
+        item.size === size
+          ? {
+              ...item,
+              quantity: item.quantity + quantity,
+            }
+          : item
       );
+    }
 
-      if (existingItem) {
-        return currentItems.map((item) =>
-          item.id === product.id &&
-          item.size === size
-            ? {
-                ...item,
-                quantity: item.quantity + quantity,
-              }
-            : item
-        );
-      }
-
-      return [
-        ...currentItems,
-        {
-          id: product.id,
-          name: product.name,
-          price: product.price,
-          category: product.category,
-          image: product.image,
-          size: size,
-          quantity: quantity,
-        },
-      ];
-    });
-  };
+    return [
+      ...currentItems,
+      {
+        id: product._id,
+        name: product.name,
+        price: product.price,
+        category: product.category,
+        image: product.image,
+        size: size,
+        quantity: quantity,
+      },
+    ];
+  });
+};
 
   // Remove product
   const removeFromCart = (id, size) => {

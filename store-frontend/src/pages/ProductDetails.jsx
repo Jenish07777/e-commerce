@@ -1,227 +1,100 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 import { Heart, Minus, Plus, ArrowLeft } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { useCart } from "../contexts/CartContext";
 import { useWishlist } from "../contexts/WishlistContext";
 
-const products = [
-  {
-    id: 1,
-    name: "Essential Oversized Tee",
-    price: 45,
-    category: "T-Shirts",
-    image: "/products/product-1.jpg",
-    rating: 4.8,
-    reviews: 124,
-    description:
-      "A relaxed oversized tee designed for everyday comfort. Made with heavyweight cotton and finished with a clean, minimal silhouette.",
-    sizes: ["S", "M", "L", "XL"],
-    colors: ["Black"],
-    material: "100% Premium Cotton",
-  },
-  {
-    id: 2,
-    name: "Heavyweight Hoodie",
-    price: 85,
-    category: "Hoodies",
-    image: "/products/product-2.jpg",
-    rating: 4.9,
-    reviews: 98,
-    description:
-      "A heavyweight everyday hoodie with a relaxed fit. Built for comfort, layering and effortless streetwear styling.",
-    sizes: ["S", "M", "L", "XL"],
-    colors: ["Black"],
-    material: "80% Cotton, 20% Polyester",
-  },
-  {
-    id: 3,
-    name: "Relaxed Cargo Pants",
-    price: 75,
-    category: "Pants",
-    image: "/products/product-3.jpg",
-    rating: 4.7,
-    reviews: 76,
-    description:
-      "Relaxed cargo pants with a modern utility-inspired silhouette. Multiple pockets and an adjustable waist make them perfect for everyday wear.",
-    sizes: ["S", "M", "L", "XL"],
-    colors: ["Black"],
-    material: "100% Cotton",
-  },
-  {
-    id: 4,
-    name: "Urban Runner",
-    price: 120,
-    category: "Sneakers",
-    image: "/products/product-4.jpg",
-    rating: 4.9,
-    reviews: 156,
-    description:
-      "A versatile everyday sneaker combining a bold streetwear silhouette with lightweight comfort.",
-    sizes: ["39", "40", "41", "42", "43", "44"],
-    colors: ["Black / White"],
-    material: "Mesh & Synthetic",
-  },
-  {
-    id: 5,
-    name: "Oversized Graphic Tee",
-    price: 50,
-    category: "T-Shirts",
-    image: "/products/product-5.jpg",
-    rating: 4.6,
-    reviews: 61,
-    description:
-      "A relaxed graphic tee designed to bring a bold visual statement to your everyday wardrobe.",
-    sizes: ["S", "M", "L", "XL"],
-    colors: ["Black"],
-    material: "100% Cotton",
-  },
-  {
-    id: 6,
-    name: "Urban Zip Hoodie",
-    price: 95,
-    category: "Hoodies",
-    image: "/products/product-6.jpg",
-    rating: 4.8,
-    reviews: 84,
-    description:
-      "A clean zip-up hoodie with a relaxed streetwear fit, designed for easy layering throughout the day.",
-    sizes: ["S", "M", "L", "XL"],
-    colors: ["Black"],
-    material: "Cotton Blend",
-  },
-  {
-    id: 7,
-    name: "Wide Leg Utility Pants",
-    price: 80,
-    category: "Pants",
-    image: "/products/product-7.jpg",
-    rating: 4.7,
-    reviews: 52,
-    description:
-      "Wide-leg utility pants combining comfort and functionality with a contemporary streetwear silhouette.",
-    sizes: ["S", "M", "L", "XL"],
-    colors: ["Black"],
-    material: "100% Cotton",
-  },
-  {
-    id: 8,
-    name: "Street Classic Sneakers",
-    price: 110,
-    category: "Sneakers",
-    image: "/products/product-8.jpg",
-    rating: 4.8,
-    reviews: 112,
-    description:
-      "Classic everyday sneakers with a clean design that works effortlessly with any URBAN outfit.",
-    sizes: ["39", "40", "41", "42", "43", "44"],
-    colors: ["White / Black"],
-    material: "Leather & Mesh",
-  },
-  {
-    id: 9,
-    name: "Essential Bomber Jacket",
-    price: 130,
-    category: "Jackets",
-    image: "/products/product-9.jpg",
-    rating: 4.9,
-    reviews: 73,
-    description:
-      "A timeless bomber jacket with a modern oversized fit and durable construction.",
-    sizes: ["S", "M", "L", "XL"],
-    colors: ["Black"],
-    material: "Nylon",
-  },
-  {
-    id: 10,
-    name: "Everyday Cap",
-    price: 35,
-    category: "Accessories",
-    image: "/products/product-10.jpg",
-    rating: 4.6,
-    reviews: 45,
-    description:
-      "A minimal everyday cap featuring a classic six-panel construction and adjustable fit.",
-    sizes: ["ONE SIZE"],
-    colors: ["Black"],
-    material: "100% Cotton",
-  },
-  {
-    id: 11,
-    name: "Relaxed Street Jacket",
-    price: 115,
-    category: "Jackets",
-    image: "/products/product-11.jpg",
-    rating: 4.7,
-    reviews: 39,
-    description:
-      "A lightweight street jacket designed with a relaxed silhouette for everyday layering.",
-    sizes: ["S", "M", "L", "XL"],
-    colors: ["Black"],
-    material: "Cotton Nylon Blend",
-  },
-  {
-    id: 12,
-    name: "Urban Crossbody Bag",
-    price: 65,
-    category: "Accessories",
-    image: "/products/product-12.jpg",
-    rating: 4.8,
-    reviews: 67,
-    description:
-      "A compact crossbody bag designed to carry your everyday essentials while keeping your look clean.",
-    sizes: ["ONE SIZE"],
-    colors: ["Black"],
-    material: "Durable Nylon",
-  },
-];
-
 const ProductDetails = () => {
   const { id } = useParams();
 
-  const {addToCart} =useCart();
+  const { addToCart } = useCart();
 
   const {
     toggleWishlist,
     isWishlisted,
   } = useWishlist();
 
-  const product = products.find(
-    (item) => item.id === Number(id)
-  );
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const [selectedSize, setSelectedSize] = useState(
-    product?.sizes?.[0] || ""
-  );
-
+  const [selectedSize, setSelectedSize] = useState("");
   const [quantity, setQuantity] = useState(1);
 
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        setLoading(true);
+        setError("");
+
+        const response = await axios.get(
+          `http://localhost:8000/api/products/${id}`
+        );
+
+        setProduct(response.data.product);
+      } catch (error) {
+        console.error("Failed to fetch product:", error);
+        setError("Product not found.");
+        setProduct(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProduct();
+  }, [id]);
+
+  useEffect(() => {
+    if (product) {
+      setSelectedSize(product.sizes?.[0] || "");
+    }
+  }, [product]);
+
+
+
   // Product not found
-  if (!product) {
-    return (
-      <main className="flex min-h-[70vh] items-center justify-center bg-[#F5F2EC] px-6 text-[#171512]">
-        <div className="text-center">
-          <p className="mb-4 text-xs tracking-[0.3em] text-[#8A6243]">
-            ERROR 404
-          </p>
+  if (loading) {
+  return (
+    <main className="flex min-h-[70vh] items-center justify-center bg-[#F5F2EC] text-[#171512]">
+      <p className="text-xs font-bold tracking-[0.3em]">
+        LOADING PRODUCT...
+      </p>
+    </main>
+  );
+}
 
-          <h1 className="text-5xl font-black uppercase">
-            PRODUCT NOT FOUND
-          </h1>
+if (error || !product) {
+  return (
+    <main className="flex min-h-[70vh] items-center justify-center bg-[#F5F2EC] px-6 text-[#171512]">
+      <div className="text-center">
+        <p className="mb-4 text-xs tracking-[0.3em] text-[#8A6243]">
+          ERROR 404
+        </p>
 
-          <Link
-            to="/products"
-            className="mt-8 inline-block bg-[#171512] px-7 py-4 text-xs font-bold tracking-widest text-[#F5F2EC] transition hover:bg-[#B8E63C] hover:text-[#171512]"
-          >
-            BACK TO SHOP
-          </Link>
-        </div>
-      </main>
-    );
-  }
+        <h1 className="text-5xl font-black uppercase">
+          PRODUCT NOT FOUND
+        </h1>
+
+        <Link
+          to="/products"
+          className="mt-8 inline-block bg-[#171512] px-7 py-4 text-xs font-bold tracking-widest text-[#F5F2EC] transition hover:bg-[#B8E63C] hover:text-[#171512]"
+        >
+          BACK TO SHOP
+        </Link>
+      </div>
+    </main>
+  );
+}
 
   const increaseQuantity = () => {
-    setQuantity((prev) => prev + 1);
-  };
+  setQuantity((prev) =>
+    Math.min(product.stock, prev + 1)
+  );
+};
+  // const increaseQuantity = () => {
+  //   setQuantity((prev) => prev + 1);
+  // };
 
   const decreaseQuantity = () => {
     setQuantity((prev) => Math.max(1, prev - 1));
@@ -268,7 +141,7 @@ const ProductDetails = () => {
   onClick={() => toggleWishlist(product)}
   aria-label="Add to wishlist"
   className={`absolute right-5 top-5 flex h-12 w-12 items-center justify-center rounded-full backdrop-blur-sm transition ${
-    isWishlisted(product.id)
+    isWishlisted(product._id)
       ? "bg-[#B8E63C]"
       : "bg-[#F5F2EC]/90 hover:bg-[#B8E63C]"
   }`}
@@ -277,7 +150,7 @@ const ProductDetails = () => {
     size={20}
     strokeWidth={1.8}
     fill={
-      isWishlisted(product.id)
+      isWishlisted(product._id)
         ? "currentColor"
         : "none"
     }
@@ -466,3 +339,18 @@ const ProductDetails = () => {
 };
 
 export default ProductDetails;
+
+// {
+//     id: 1,
+//     name: "Essential Oversized Tee",
+//     price: 45,
+//     category: "T-Shirts",
+//     image: "/products/product-1.jpg",
+//     rating: 4.8,
+//     reviews: 124,
+//     description:
+//       "A relaxed oversized tee designed for everyday comfort. Made with heavyweight cotton and finished with a clean, minimal silhouette.",
+//     sizes: ["S", "M", "L", "XL"],
+//     colors: ["Black"],
+//     material: "100% Premium Cotton",
+//   },

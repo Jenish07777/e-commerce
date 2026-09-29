@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, } from "react-router-dom";
 import {
   ArrowLeft,
   ArrowRight,
@@ -9,9 +9,13 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useCart } from "../contexts/CartContext";
+import axios from "axios";
+import { useAuth } from "../contexts/AuthContext";
+
 
 export default function Checkout() {
-  const navigate = useNavigate();
+  
+  const { token } = useAuth();
 
   const {
     cartItems,
@@ -45,40 +49,56 @@ export default function Checkout() {
     });
   };
 
-  const handlePlaceOrder = (e) => {
-    e.preventDefault();
+  const handlePlaceOrder = async (e) => {
+  e.preventDefault();
 
-    if (cartItems.length === 0) {
-      return;
-    }
+  if (cartItems.length === 0) {
+    return;
+  }
 
-    const newOrderNumber = `URB-${Date.now().toString().slice(-6)}`;
+  try {
+    const response = await axios.post(
+      "http://localhost:8000/api/orders",
+      {
+        items: cartItems.map((item) => ({
+          product: item.id,
+          name: item.name,
+          price: item.price,
+          image: item.image,
+          size: item.size,
+          quantity: item.quantity,
+        })),
 
-    const newOrder = {
-      id: newOrderNumber,
-      date: new Date().toISOString(),
-      items: cartItems,
-      subtotal,
-      shipping,
-      total,
-      customer: formData,
-      paymentMethod,
-      status: "Processing",
-    };
+        shippingAddress: formData,
 
-    const existingOrders =
-      JSON.parse(localStorage.getItem("orders")) || [];
+        paymentMethod,
 
-    localStorage.setItem(
-      "orders",
-      JSON.stringify([newOrder, ...existingOrders])
+        subtotal,
+        shipping,
+        total,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
     );
 
-    setOrderNumber(newOrderNumber);
+    const order = response.data.order;
+
+    setOrderNumber(order._id);
     setOrderPlaced(true);
 
     clearCart();
-  };
+  } catch (error) {
+    console.error("Place order error:", error);
+
+    alert(
+      error.response?.data?.message ||
+        "Failed to place order."
+    );
+  }
+};
 
   // Empty cart
   if (cartItems.length === 0 && !orderPlaced) {
