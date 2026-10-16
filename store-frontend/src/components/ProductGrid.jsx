@@ -1,38 +1,61 @@
 import { Heart, ShoppingBag } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { useCart } from "../contexts/CartContext";
+import { useWishlist } from "../contexts/WishlistContext";
 
-const products = [
-  {
-    id: 1,
-    name: "Essential Oversized Tee",
-    price: "$45",
-    category: "T-SHIRTS",
-    image: "/products/product-1.jpg",
-  },
-  {
-    id: 2,
-    name: "Heavyweight Hoodie",
-    price: "$85",
-    category: "HOODIES",
-    image: "/products/product-2.jpg",
-  },
-  {
-    id: 3,
-    name: "Relaxed Cargo Pants",
-    price: "$75",
-    category: "PANTS",
-    image: "/products/product-3.jpg",
-  },
-  {
-    id: 4,
-    name: "Urban Runner",
-    price: "$120",
-    category: "SNEAKERS",
-    image: "/products/product-4.jpg",
-  },
-];
+const ProductGrid = ({
+  title = "NEW ARRIVALS",
+  subtitle = "JUST DROPPED",
+}) => {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-const ProductGrid = ({ title = "NEW ARRIVALS", subtitle = "JUST DROPPED" }) => {
+  const { addToCart } = useCart();
+
+  const {
+    toggleWishlist,
+    isWishlisted,
+  } = useWishlist();
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:8000/api/products"
+        );
+
+        setProducts(response.data.products);
+      } catch (error) {
+        console.error("Failed to fetch products:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  const handleAddToCart = (product) => {
+    // Use the first available size by default
+    const defaultSize = product.sizes?.[0] || "";
+
+    addToCart(product, defaultSize, 1);
+  };
+
+  if (loading) {
+    return (
+      <section className="bg-[#F5F2EC] px-6 py-20 md:px-10 md:py-28">
+        <div className="mx-auto max-w-[1400px]">
+          <p className="text-xs font-bold tracking-[0.3em]">
+            LOADING PRODUCTS...
+          </p>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="bg-[#F5F2EC] px-6 py-20 md:px-10 md:py-28">
       <div className="mx-auto max-w-[1400px]">
@@ -59,12 +82,14 @@ const ProductGrid = ({ title = "NEW ARRIVALS", subtitle = "JUST DROPPED" }) => {
 
         {/* Products */}
         <div className="grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-4 md:gap-x-6">
+
           {products.map((product) => (
-            <div key={product.id} className="group">
+            <div key={product._id} className="group">
 
               {/* Image */}
               <div className="relative aspect-[4/5] overflow-hidden bg-[#EAE4DA]">
-                <Link to={`/products/${product.id}`}>
+
+                <Link to={`/products/${product._id}`}>
                   <img
                     src={product.image}
                     alt={product.name}
@@ -74,14 +99,28 @@ const ProductGrid = ({ title = "NEW ARRIVALS", subtitle = "JUST DROPPED" }) => {
 
                 {/* Wishlist */}
                 <button
-                  className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-[#F5F2EC]/90 backdrop-blur-sm transition hover:bg-[#B8E63C]"
+                  onClick={() => toggleWishlist(product)}
                   aria-label="Add to wishlist"
+                  className={`absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full backdrop-blur-sm transition ${
+                    isWishlisted(product._id)
+                      ? "bg-[#B8E63C]"
+                      : "bg-[#F5F2EC]/90 hover:bg-[#B8E63C]"
+                  }`}
                 >
-                  <Heart size={16} strokeWidth={1.8} />
+                  <Heart
+                    size={16}
+                    strokeWidth={1.8}
+                    fill={
+                      isWishlisted(product._id)
+                        ? "currentColor"
+                        : "none"
+                    }
+                  />
                 </button>
 
                 {/* Add to Cart */}
                 <button
+                  onClick={() => handleAddToCart(product)}
                   className="absolute bottom-4 left-4 right-4 flex items-center justify-center gap-2 bg-[#171512] py-3 text-xs font-bold tracking-widest text-[#F5F2EC] opacity-0 transition duration-300 group-hover:opacity-100 hover:bg-[#B8E63C] hover:text-[#171512]"
                 >
                   <ShoppingBag size={15} />
@@ -96,23 +135,25 @@ const ProductGrid = ({ title = "NEW ARRIVALS", subtitle = "JUST DROPPED" }) => {
                 </p>
 
                 <div className="mt-2 flex items-start justify-between gap-3">
+
                   <Link
-                    to={`/products/${product.id}`}
+                    to={`/products/${product._id}`}
                     className="text-sm font-medium hover:underline"
                   >
                     {product.name}
                   </Link>
 
                   <p className="shrink-0 text-sm font-bold">
-                    {product.price}
+                    ${product.price}
                   </p>
+
                 </div>
               </div>
 
             </div>
           ))}
-        </div>
 
+        </div>
       </div>
     </section>
   );
