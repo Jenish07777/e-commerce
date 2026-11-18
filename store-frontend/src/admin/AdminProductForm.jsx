@@ -128,8 +128,8 @@ export default function AdminProductForm() {
       };
 
       if (isEditing) {
-        await axios.put(
-          `http://localhost:8000/api/admin/products/${id}`,
+        await API.put(
+          `/admin/products/${id}`,
           productData,
           {
             headers: {
@@ -138,8 +138,8 @@ export default function AdminProductForm() {
           }
         );
       } else {
-        await axios.post(
-          "http://localhost:8000/api/admin/products",
+        await API.post(
+          "/admin/products",
           productData,
           {
             headers: {

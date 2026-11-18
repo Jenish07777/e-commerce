@@ -52,8 +52,8 @@ export default function AdminProducts() {
     if (!confirmed) return;
 
     try {
-      await axios.delete(
-        `http://localhost:8000/api/admin/products/${productId}`,
+      await API.delete(
+        `/admin/products/${productId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
