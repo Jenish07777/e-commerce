@@ -6,7 +6,7 @@ import {
   User,
 } from "lucide-react";
 import { useState } from "react";
-import axios from "axios";
+import API from "../api/axios";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -43,8 +43,8 @@ export default function Register() {
     try {
       setLoading(true);
 
-      const response = await axios.post(
-        "http://localhost:8000/api/auth/register",
+      const response = await API.post(
+        "/auth/register",
         {
           fullName: formData.fullName,
           email: formData.email,

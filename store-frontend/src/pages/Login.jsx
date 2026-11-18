@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, Lock, Mail } from "lucide-react";
 import { useState } from "react";
-import axios from "axios";
+import API from "../api/axios";
 import { useAuth } from "../contexts/AuthContext";
 
 export default function Login() {
@@ -32,8 +32,8 @@ export default function Login() {
     try {
       setLoading(true);
 
-      const response = await axios.post(
-        "http://localhost:8000/api/auth/login",
+      const response = await API.post(
+        "/auth/login",
         {
           email: formData.email,
           password: formData.password,

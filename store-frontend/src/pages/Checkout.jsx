@@ -9,7 +9,8 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useCart } from "../contexts/CartContext";
-import axios from "axios";
+import API from "../api/axios";
+// import axios from "axios";
 import { useAuth } from "../contexts/AuthContext";
 
 
@@ -57,8 +58,8 @@ export default function Checkout() {
   }
 
   try {
-    const response = await axios.post(
-      "http://localhost:8000/api/orders",
+    const response = await API.post(
+      "/orders",
       {
         items: cartItems.map((item) => ({
           product: item.id,

@@ -1,7 +1,7 @@
 import { Heart, ShoppingBag } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import API from "../api/axios";
 import { useCart } from "../contexts/CartContext";
 import { useWishlist } from "../contexts/WishlistContext";
 
@@ -22,8 +22,8 @@ const ProductGrid = ({
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:8000/api/products"
+        const response = await API.get(
+          "/products"
         );
 
         setProducts(response.data.products);

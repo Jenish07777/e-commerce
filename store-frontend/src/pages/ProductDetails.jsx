@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import API from "../api/axios";
 import { Heart, Minus, Plus, ArrowLeft } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { useCart } from "../contexts/CartContext";
@@ -28,8 +28,8 @@ const ProductDetails = () => {
         setLoading(true);
         setError("");
 
-        const response = await axios.get(
-          `http://localhost:8000/api/products/${id}`
+        const response = await API.get(
+          `/products/${id}`
         );
 
         setProduct(response.data.product);

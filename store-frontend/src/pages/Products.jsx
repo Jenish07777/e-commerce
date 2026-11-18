@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import axios from "axios";
+import API from "../api/axios";
+// import axios from "axios";
 import { Heart, ShoppingBag, SlidersHorizontal } from "lucide-react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
@@ -26,7 +27,7 @@ const Products = () => {
       try {
         setLoading(true);
 
-        const response = await axios.get("http://localhost:8000/api/products");
+        const response = await API.get("/products");
 
         setProducts(response.data.products);
       } catch (error) {

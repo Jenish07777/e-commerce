@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import API from "../api/axios";
 import { ArrowLeft, Package } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 
@@ -22,8 +22,8 @@ export default function Orders() {
         setLoading(true);
         setError("");
 
-        const response = await axios.get(
-          "http://localhost:8000/api/orders",
+        const response = await API.get(
+          "/orders",
           {
             headers: {
               Authorization: `Bearer ${token}`,
