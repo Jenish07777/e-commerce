@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import API from "../api/axios";
 import { Navigate } from "react-router-dom";
 import { RefreshCw } from "lucide-react";
 
@@ -15,8 +15,8 @@ export default function AdminOrders() {
     try {
       setLoading(true);
 
-      const response = await axios.get(
-        "http://localhost:8000/api/admin/orders",
+      const response = await API.get(
+        "/admin/orders",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -40,8 +40,8 @@ export default function AdminOrders() {
 
   const updateStatus = async (orderId, status) => {
     try {
-      await axios.put(
-        `http://localhost:8000/api/admin/orders/${orderId}/status`,
+      await API.put(
+        `/admin/orders/${orderId}/status`,
         { status },
         {
           headers: {

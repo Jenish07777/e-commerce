@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import API from "../api/axios";
 import { Navigate } from "react-router-dom";
 import { RefreshCw } from "lucide-react";
 
@@ -15,8 +15,8 @@ export default function AdminUsers() {
     try {
       setLoading(true);
 
-      const response = await axios.get(
-        "http://localhost:8000/api/admin/users",
+      const response = await API.get(
+        "/api/admin/users",
         {
           headers: {
             Authorization: `Bearer ${token}`,

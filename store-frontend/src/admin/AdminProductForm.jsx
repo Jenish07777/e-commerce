@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import API from "../api/axios";
 import {
   Navigate,
   useNavigate,
@@ -42,8 +42,8 @@ export default function AdminProductForm() {
 
     const fetchProduct = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:8000/api/admin/products",
+        const response = await API.get(
+          "/admin/products",
           {
             headers: {
               Authorization: `Bearer ${token}`,
